@@ -81,8 +81,8 @@ def sendEmail(to, content):
 	server.ehlo()
 	server.starttls()
 	# Enable low security in gmail
-	server.login('rohanmistry700@gmail.com', 'ajsneysrkuuhgmno')
-	server.sendmail('rohanmistry700@gmail.com', to, content)
+	server.login('userid@gmail.com', 'your password')
+	server.sendmail('userid700@gmail.com', to, content)
 	server.close()
 def alarm(query):
     timehere = open("Alarmtext.txt","a")
