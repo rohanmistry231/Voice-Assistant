@@ -12,10 +12,6 @@ def takeCommand():
 		r.adjust_for_ambient_noise(source,duration=0.1)
 		r.energy_threshold = 300
 		r.pause_threshold = 1 
-		# What is pause thresold ? ans is given below.
-		#A pause threshold value in a voice assistant refers to the length of time that the assistant will wait before ending a speech recognition session if there is a pause in the user's speech.
-		#For example, if a pause threshold value is set to 2 seconds, and the user stops speaking for more than 2 seconds, the voice assistant will assume that the user has finished speaking and end the speech recognition session.
-		#This feature is useful because it allows the voice assistant to accurately recognize when the user has finished speaking, and it can help to prevent false positives or misinterpretations of the user's speech.
 		audio = r.listen(source,0,4)
                 
 engine = pyttsx3.init("sapi5")
@@ -27,12 +23,12 @@ def speak(audio):
     engine.runAndWait()
 
 def latestnews():
-    api_dict = {"business" : "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=api-key",
-            "entertainment" : "https://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=api-key",
-            "health" : "https://newsapi.org/v2/top-headlines?country=in&category=health&apiKey=api-key",
-            "science" :"https://newsapi.org/v2/top-headlines?country=in&category=science&apiKey=api-key",
-            "sports" :"https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=api-key",
-            "technology" :"https://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=api-key"
+    api_dict = {"business" : "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=1a1ac9b8505341478289bc11a04eb056",
+            "entertainment" : "https://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=1a1ac9b8505341478289bc11a04eb056",
+            "health" : "https://newsapi.org/v2/top-headlines?country=in&category=health&apiKey=1a1ac9b8505341478289bc11a04eb056",
+            "science" :"https://newsapi.org/v2/top-headlines?country=in&category=science&apiKey=1a1ac9b8505341478289bc11a04eb056",
+            "sports" :"https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=1a1ac9b8505341478289bc11a04eb056",
+            "technology" :"https://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=1a1ac9b8505341478289bc11a04eb056"
 }
 
     content = None

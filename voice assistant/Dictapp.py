@@ -7,13 +7,18 @@ from time import sleep
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
 engine.setProperty("voice", voices[0].id)
-engine.setProperty("rate",170)
 
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
-dictapp = {"commandprompt":"cmd","paint":"paint","word":"winword","excel":"excel","chrome":"chrome","vscode":"code","powerpoint":"powerpnt"}
+dictapp = {"commandprompt":"cmd",
+           "paint":"paint",
+           "word":"winword",
+           "excel":"excel",
+           "chrome":"chrome",
+           "vscode":"code",
+           "powerpoint":"powerpnt"}
 
 def openappweb(query):
     speak("Launching, sir")
@@ -21,7 +26,6 @@ def openappweb(query):
         query = query.replace("open","")
         query = query.replace(" ","") 
         query = query.replace("hey","")
-        query = query.replace(" ","")
         webbrowser.open(f"https://www.{query}")
     else:
         keys = list(dictapp.keys())
@@ -31,7 +35,7 @@ def openappweb(query):
 
 def closeappweb(query):
     speak("Closing,sir")
-    if "one tab" in query or "1 tab" in query:
+    if "close tab" in query or "1 tab" in query:
         pyautogui.hotkey("ctrl","w")
         speak("All tabs closed")
     elif "2 tab" in query:
@@ -45,8 +49,7 @@ def closeappweb(query):
         pyautogui.hotkey("ctrl","w")
         sleep(0.5)
         pyautogui.hotkey("ctrl","w")
-        speak("All tabs closed")
-        
+        speak("All tabs closed")  
     elif "4 tab" in query:
         pyautogui.hotkey("ctrl","w")
         sleep(0.5)
