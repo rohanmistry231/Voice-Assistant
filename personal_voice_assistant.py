@@ -18,7 +18,6 @@ from bs4 import BeautifulSoup
 import win32com.client as wincl
 from urllib.request import urlopen
 import datetime
-import openai
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
@@ -107,9 +106,9 @@ if __name__ == '__main__':
 
     # This Function will clean any
     # command before execution of this python file
-    # clear()
-    # wishMe()
-    # username()
+    clear()
+    wishMe()
+    username()
 
     while True:
 
