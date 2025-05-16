@@ -1,0 +1,11 @@
+pyttsx3==2.90
+SpeechRecognition==3.10.0
+spacy==3.7.2
+pywhatkit==5.4
+wikipedia==1.4.0
+pyautogui==0.9.54
+pynput==1.7.6
+requests==2.31.0
+pyjokes==0.6.0
+python-dotenv==1.0.0
+wolframalpha==5.0.0
