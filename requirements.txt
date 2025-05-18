@@ -9,3 +9,8 @@ requests==2.31.0
 pyjokes==0.6.0
 python-dotenv==1.0.0
 wolframalpha==5.0.0
+pillow>=10.4.0
+dotenv==1.0.0
+pyjokes==0.6.0
+pywhatkit==5.4
+wolframalpha==5.0.0

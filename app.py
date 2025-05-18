@@ -2,8 +2,9 @@ import pyttsx3
 import speech_recognition as sr
 import datetime
 from pathlib import Path
-import spacy
+import os
 import logging
+import shutil
 from modules import chrome_shortcut, search, apps, keyboard, news, calculator, whatsapp, alarm
 from config import VOICE_ID, SPEECH_RATE, ALARM_FILE, NOTES_FILE, REMEMBER_FILE, EMAIL_USER, EMAIL_PASS, APP_MAPPINGS, WEBSITE_MAPPINGS
 
@@ -12,21 +13,57 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Initialize text-to-speech engine
-engine = pyttsx3.init("sapi5")
-voices = engine.getProperty("voices")
-engine.setProperty("voice", voices[VOICE_ID].id)
-engine.setProperty("rate", SPEECH_RATE)
-
-# Initialize NLP
-nlp = spacy.load("en_core_web_sm")
+engine = None
+voices = None
+try:
+    engine = pyttsx3.init("sapi5")
+    voices = engine.getProperty("voices")
+    engine.setProperty("voice", voices[VOICE_ID].id)
+    engine.setProperty("rate", SPEECH_RATE)
+except Exception as e:
+    logger.error(f"Failed to initialize text-to-speech engine: {e}")
 
 def speak(text: str) -> None:
     """Speak the provided text using the text-to-speech engine."""
+    global engine, voices
+    if engine is None or voices is None:
+        logger.warning("Text-to-speech engine not initialized. Attempting to initialize...")
+        try:
+            engine = pyttsx3.init("sapi5")
+            voices = engine.getProperty("voices")
+            engine.setProperty("voice", voices[VOICE_ID].id)
+            engine.setProperty("rate", SPEECH_RATE)
+        except Exception as e:
+            logger.error(f"Failed to initialize text-to-speech engine: {e}")
+            return
+
     try:
         engine.say(text)
         engine.runAndWait()
+    except TypeError as te:
+        logger.error(f"TypeError in speech (likely comtypes issue): {te}")
+        # Attempt to reinitialize the engine
+        try:
+            engine = pyttsx3.init("sapi5")
+            voices = engine.getProperty("voices")
+            engine.setProperty("voice", voices[VOICE_ID].id)
+            engine.setProperty("rate", SPEECH_RATE)
+            engine.say(text)
+            engine.runAndWait()
+        except Exception as e2:
+            logger.error(f"Failed to reinitialize speech engine after TypeError: {e2}")
     except Exception as e:
         logger.error(f"Speech error: {e}")
+        # Attempt to reinitialize the engine
+        try:
+            engine = pyttsx3.init("sapi5")
+            voices = engine.getProperty("voices")
+            engine.setProperty("voice", voices[VOICE_ID].id)
+            engine.setProperty("rate", SPEECH_RATE)
+            engine.say(text)
+            engine.runAndWait()
+        except Exception as e2:
+            logger.error(f"Failed to reinitialize speech engine: {e2}")
 
 def take_command() -> str:
     """Capture voice input and convert to text."""
@@ -88,23 +125,26 @@ def send_email(to: str, content: str) -> bool:
         logger.error(f"Email error: {e}")
         return False
 
+def detect_intent(query: str) -> str:
+    """Detect the intent of the query using keyword matching."""
+    query = query.lower()
+    if any(word in query for word in ["open", "launch"]):
+        return "open"
+    elif any(word in query for word in ["close", "exit"]):
+        return "close"
+    elif any(word in query for word in ["search", "find", "google", "youtube", "wikipedia", "what is", "who is"]):
+        return "search"
+    elif any(word in query for word in ["play", "music", "song"]):
+        return "play"
+    elif any(word in query for word in ["email", "mail"]):
+        return "email"
+    elif any(word in query for word in ["joke", "funny"]):
+        return "joke"
+    return "unknown"
+
 def process_command(query: str, username: str) -> bool:
     """Process the user's voice command."""
-    doc = nlp(query)
-    intent = "unknown"
-    for token in doc:
-        if token.lemma_ in ["open", "launch"]:
-            intent = "open"
-        elif token.lemma_ in ["close", "exit"]:
-            intent = "close"
-        elif token.lemma_ in ["search", "find"]:
-            intent = "search"
-        elif token.lemma_ in ["play", "music", "song"]:
-            intent = "play"
-        elif token.lemma_ in ["email", "mail"]:
-            intent = "email"
-        elif token.lemma_ in ["joke", "funny"]:
-            intent = "joke"
+    intent = detect_intent(query)
 
     if intent == "open" or "open" in query:
         # Handle both apps and websites
@@ -119,7 +159,7 @@ def process_command(query: str, username: str) -> bool:
     elif intent == "close" or "close" in query:
         apps.close_app(query)
         return True
-    elif intent == "search" or any(x in query for x in ["google", "youtube", "wikipedia", "what is", "who is"]):
+    elif intent == "search":
         search.search_query(query)
         return True
     elif intent == "play" or "play song" in query:
